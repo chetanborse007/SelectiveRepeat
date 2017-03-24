@@ -336,7 +336,10 @@ class PacketHandler(Thread):
         if self.totalPackets == "ALL":
             self.totalPackets = len(packets)
         else:
-            self.totalPackets = int(self.totalPackets)
+            if int(self.totalPackets) <= len(packets):
+                self.totalPackets = int(self.totalPackets)
+            else:
+                self.totalPackets = len(packets)
 
         return packets[:self.totalPackets]
 
