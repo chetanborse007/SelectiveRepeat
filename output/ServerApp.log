@@ -1,39 +1,37 @@
-Chetans-MacBook-Pro:SelectiveRepeat chetan$ python ServerApp.py 
-2017-03-23 16:45:48,544 RECEIVER [INFO] Creating UDP socket 127.0.0.1:8080 for communication with the client
-2017-03-23 16:45:48,544 RECEIVER [INFO] Started to receive packets transmitted from sender
-2017-03-23 16:45:48,544 RECEIVER [INFO] Writing payload data to '/My Computer/Academic/GitHub/SelectiveRepeat/data/receiver/index.html'
-2017-03-23 16:45:48,545 RECEIVER [INFO] Creating a thread to monitor packet receipt
-2017-03-23 16:45:48,545 RECEIVER [INFO] Starting thread execution
-2017-03-23 16:45:48,545 RECEIVER [INFO] Started to monitor packet receipt
-2017-03-23 16:45:51,256 RECEIVER [INFO] Received packet with sequence number: 0
-2017-03-23 16:45:51,256 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 0
-2017-03-23 16:45:51,257 RECEIVER [INFO] Delivered packet with sequence number: 0
-2017-03-23 16:45:51,268 RECEIVER [INFO] Received packet with sequence number: 1
-2017-03-23 16:45:51,268 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 1
-2017-03-23 16:45:51,268 RECEIVER [INFO] Delivered packet with sequence number: 1
-2017-03-23 16:45:51,288 RECEIVER [INFO] Received packet with sequence number: 2
-2017-03-23 16:45:51,288 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 2
-2017-03-23 16:45:51,288 RECEIVER [INFO] Delivered packet with sequence number: 2
-2017-03-23 16:45:51,293 RECEIVER [INFO] Received packet with sequence number: 3
-2017-03-23 16:45:51,293 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 3
-2017-03-23 16:45:51,294 RECEIVER [INFO] Delivered packet with sequence number: 3
-2017-03-23 16:45:51,305 RECEIVER [INFO] Received packet with sequence number: 4
-2017-03-23 16:45:51,306 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 4
-2017-03-23 16:45:51,306 RECEIVER [INFO] Delivered packet with sequence number: 4
-2017-03-23 16:45:51,331 RECEIVER [INFO] Received packet with sequence number: 5
-2017-03-23 16:45:51,331 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 5
-2017-03-23 16:45:51,331 RECEIVER [INFO] Delivered packet with sequence number: 5
-2017-03-23 16:45:51,333 RECEIVER [ERROR] Simulating artificial packet loss!!
-2017-03-23 16:45:51,333 RECEIVER [ERROR] Lost a packet with sequence number: 6
-2017-03-23 16:45:51,398 RECEIVER [INFO] Received packet with sequence number: 7
-2017-03-23 16:45:51,398 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 7
-2017-03-23 16:46:01,358 RECEIVER [WARNING] Received corrupt packet!!
-2017-03-23 16:46:01,359 RECEIVER [WARNING] Discarding packet with sequence number: 6
-2017-03-23 16:46:11,367 RECEIVER [INFO] Received packet with sequence number: 6
-2017-03-23 16:46:11,367 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 6
-2017-03-23 16:46:11,368 RECEIVER [INFO] Delivered packet with sequence number: 6
-2017-03-23 16:46:11,368 RECEIVER [INFO] Delivered packet with sequence number: 7
-2017-03-23 16:47:11,386 RECEIVER [WARNING] Timeout!!
-2017-03-23 16:47:11,387 RECEIVER [INFO] Gracefully terminating the receiver process, as client stopped transmission!!
+Chetans-MacBook-Pro:SelectiveRepeat chetan$ python ServerApp.py -a "127.0.0.1" -b 8081 -x "127.0.0.1" -y 8080
+2017-03-25 01:11:16,514 RECEIVER [INFO] Creating UDP socket 127.0.0.1:8080 for communication with the client
+2017-03-25 01:11:16,514 RECEIVER [INFO] Started to receive packets transmitted from sender
+2017-03-25 01:11:16,514 RECEIVER [INFO] Writing payload data to '/My Computer/Academic/GitHub/SelectiveRepeat/data/receiver/index.html'
+2017-03-25 01:11:16,515 RECEIVER [INFO] Creating a thread to monitor packet receipt
+2017-03-25 01:11:16,515 RECEIVER [INFO] Starting thread execution
+2017-03-25 01:11:16,515 RECEIVER [INFO] Started to monitor packet receipt
+2017-03-25 01:11:19,165 RECEIVER [INFO] Received packet with sequence number: 0
+2017-03-25 01:11:19,165 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 0
+2017-03-25 01:11:19,165 RECEIVER [INFO] Delivered packet with sequence number: 0
+2017-03-25 01:11:19,166 RECEIVER [ERROR] Simulating artificial packet loss!!
+2017-03-25 01:11:19,166 RECEIVER [ERROR] Lost a packet with sequence number: 1
+2017-03-25 01:11:19,196 RECEIVER [INFO] Received packet with sequence number: 2
+2017-03-25 01:11:19,196 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 2
+2017-03-25 01:11:29,194 RECEIVER [INFO] Received packet with sequence number: 1
+2017-03-25 01:11:29,195 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 1
+2017-03-25 01:11:29,195 RECEIVER [INFO] Delivered packet with sequence number: 1
+2017-03-25 01:11:29,195 RECEIVER [INFO] Delivered packet with sequence number: 2
+2017-03-25 01:11:29,197 RECEIVER [INFO] Received packet with sequence number: 3
+2017-03-25 01:11:29,197 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 3
+2017-03-25 01:11:29,197 RECEIVER [INFO] Delivered packet with sequence number: 3
+2017-03-25 01:11:29,210 RECEIVER [INFO] Received packet with sequence number: 0
+2017-03-25 01:11:29,211 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 0
+2017-03-25 01:11:29,211 RECEIVER [INFO] Delivered packet with sequence number: 0
+2017-03-25 01:11:29,251 RECEIVER [INFO] Received packet with sequence number: 1
+2017-03-25 01:11:29,252 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 1
+2017-03-25 01:11:29,252 RECEIVER [INFO] Delivered packet with sequence number: 1
+2017-03-25 01:11:29,253 RECEIVER [INFO] Received packet with sequence number: 2
+2017-03-25 01:11:29,253 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 2
+2017-03-25 01:11:29,254 RECEIVER [INFO] Delivered packet with sequence number: 2
+2017-03-25 01:11:29,301 RECEIVER [INFO] Received packet with sequence number: 3
+2017-03-25 01:11:29,301 RECEIVER [INFO] Transmitting an acknowledgement with ack number: 3
+2017-03-25 01:11:29,301 RECEIVER [INFO] Delivered packet with sequence number: 3
+2017-03-25 01:12:29,318 RECEIVER [WARNING] Timeout!!
+2017-03-25 01:12:29,318 RECEIVER [INFO] Gracefully terminating the receiver process, as client stopped transmission!!
 Chetans-MacBook-Pro:SelectiveRepeat chetan$ 
 

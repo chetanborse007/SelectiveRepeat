@@ -1,31 +1,28 @@
-Chetans-MacBook-Pro:SelectiveRepeat chetan$ python ClientApp.py 
-2017-03-23 16:45:51,190 SENDER [INFO] Creating UDP socket 127.0.0.1:8081 for communication with the server
-2017-03-23 16:45:51,190 SENDER [INFO] Transmitting file 'index.html' to the receiver
-2017-03-23 16:45:51,190 SENDER [INFO] Creating a thread to monitor packet transmission
-2017-03-23 16:45:51,191 SENDER [INFO] Creating a thread to monitor acknowledgement receipt
-2017-03-23 16:45:51,191 SENDER [INFO] Starting thread execution
-2017-03-23 16:45:51,191 SENDER [INFO] [PacketHandler] Generating packets
-2017-03-23 16:45:51,253 SENDER [INFO] [PacketHandler] Starting packet transmission
-2017-03-23 16:45:51,254 SENDER [INFO] [Packet(0)] Transmitting a packet with sequence number: 0
-2017-03-23 16:45:51,254 SENDER [INFO] [Packet(1)] Transmitting a packet with sequence number: 1
-2017-03-23 16:45:51,267 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 0
-2017-03-23 16:45:51,284 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 1
-2017-03-23 16:45:51,285 SENDER [INFO] [Packet(2)] Transmitting a packet with sequence number: 2
-2017-03-23 16:45:51,286 SENDER [INFO] [Packet(3)] Transmitting a packet with sequence number: 3
-2017-03-23 16:45:51,290 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 2
-2017-03-23 16:45:51,301 SENDER [INFO] [Packet(4)] Transmitting a packet with sequence number: 4
-2017-03-23 16:45:51,302 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 3
-2017-03-23 16:45:51,315 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 4
-2017-03-23 16:45:51,328 SENDER [INFO] [Packet(5)] Transmitting a packet with sequence number: 5
-2017-03-23 16:45:51,328 SENDER [INFO] [Packet(6)] Transmitting a packet with sequence number: 6
-2017-03-23 16:45:51,331 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 5
-2017-03-23 16:45:51,382 SENDER [INFO] [Packet(7)] Transmitting a packet with sequence number: 7
-2017-03-23 16:45:51,423 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 7
-2017-03-23 16:46:01,333 SENDER [INFO] [Packet(6)] Retransmitting a packet with sequence number: 6
-2017-03-23 16:46:01,341 SENDER [ERROR] [Packet(6)] Simulating artificial bit error!!
-2017-03-23 16:46:01,341 SENDER [ERROR] [Packet(6)] Injected bit error into a packet with sequence number: 6
-2017-03-23 16:46:11,363 SENDER [INFO] [Packet(6)] Retransmitting a packet with sequence number: 6
-2017-03-23 16:46:11,394 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 6
-2017-03-23 16:46:11,401 SENDER [INFO] [PacketHandler] Stopping packet transmission
+Chetans-MacBook-Pro:SelectiveRepeat chetan$ python ClientApp.py -f "index.html" -a "127.0.0.1" -b 8081 -x "127.0.0.1" -y 8080 -m 2 -s 1500 -n "ALL" -t 10
+2017-03-25 01:11:19,094 SENDER [INFO] Creating UDP socket 127.0.0.1:8081 for communication with the server
+2017-03-25 01:11:19,094 SENDER [INFO] Transmitting file 'index.html' to the receiver
+2017-03-25 01:11:19,094 SENDER [INFO] Creating a thread to monitor packet transmission
+2017-03-25 01:11:19,094 SENDER [INFO] Creating a thread to monitor acknowledgement receipt
+2017-03-25 01:11:19,095 SENDER [INFO] Starting thread execution
+2017-03-25 01:11:19,095 SENDER [INFO] [PacketHandler] Generating packets
+2017-03-25 01:11:19,160 SENDER [INFO] [PacketHandler] Starting packet transmission
+2017-03-25 01:11:19,162 SENDER [INFO] [Packet(0)] Transmitting a packet with sequence number: 0
+2017-03-25 01:11:19,163 SENDER [INFO] [Packet(1)] Transmitting a packet with sequence number: 1
+2017-03-25 01:11:19,174 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 0
+2017-03-25 01:11:19,194 SENDER [INFO] [Packet(2)] Transmitting a packet with sequence number: 2
+2017-03-25 01:11:19,209 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 2
+2017-03-25 01:11:29,193 SENDER [INFO] [Packet(1)] Retransmitting a packet with sequence number: 1
+2017-03-25 01:11:29,195 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 1
+2017-03-25 01:11:29,196 SENDER [INFO] [Packet(3)] Transmitting a packet with sequence number: 3
+2017-03-25 01:11:29,201 SENDER [INFO] [Packet(0)] Transmitting a packet with sequence number: 0
+2017-03-25 01:11:29,201 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 3
+2017-03-25 01:11:29,239 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 0
+2017-03-25 01:11:29,250 SENDER [INFO] [Packet(1)] Transmitting a packet with sequence number: 1
+2017-03-25 01:11:29,252 SENDER [INFO] [Packet(2)] Transmitting a packet with sequence number: 2
+2017-03-25 01:11:29,252 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 1
+2017-03-25 01:11:29,278 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 2
+2017-03-25 01:11:29,292 SENDER [INFO] [Packet(3)] Transmitting a packet with sequence number: 3
+2017-03-25 01:11:29,303 SENDER [INFO] [ACKHandler] Received acknowledgement with ack number: 3
+2017-03-25 01:11:29,304 SENDER [INFO] [PacketHandler] Stopping packet transmission
 Chetans-MacBook-Pro:SelectiveRepeat chetan$ 
 

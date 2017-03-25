@@ -24,6 +24,7 @@ from collections import namedtuple
 from collections import OrderedDict
 from threading import Thread
 from threading import Lock
+from Carbon.Aliases import true
 
 
 # Set logging
@@ -152,34 +153,45 @@ class Window(object):
     def __init__(self, sequenceNumberBits):
         self.expectedAck = 0
         self.nextSequenceNumber = 0
-        self.maxSize = math.pow(2, sequenceNumberBits-1)
+        self.nextPkt = 0
+        self.maxWindowSize = int(math.pow(2, sequenceNumberBits-1))
+        self.maxSequenceSpace = int(math.pow(2, sequenceNumberBits))
         self.transmissionWindow = OrderedDict()
         self.isPacketTransmission = True
-
-    def SetNextSequenceNumber(self, nextSequenceNumber):
-        with LOCK:
-            self.nextSequenceNumber = nextSequenceNumber
 
     def expectedACK(self):
         return self.expectedAck
 
+    def maxSequenceNumber(self):
+        return self.maxSequenceSpace
+
     def empty(self):
-        if self.nextSequenceNumber == self.expectedAck:
+        if len(self.transmissionWindow) == 0:
             return True
         return False
 
     def full(self):
-        if self.nextSequenceNumber >= (self. expectedAck + self.maxSize):
+        if len(self.transmissionWindow) >= self.maxWindowSize:
+            return True
+        return False
+
+    def exist(self, key):
+        if key in self.transmissionWindow:
             return True
         return False
 
     def next(self):
-        return self.nextSequenceNumber
+        return self.nextPkt
 
     def consume(self, key):
         with LOCK:
             self.transmissionWindow[key] = [None, False]
+
             self.nextSequenceNumber += 1
+            if self.nextSequenceNumber >= self.maxSequenceSpace:
+                self.nextSequenceNumber %= self.maxSequenceSpace
+
+            self.nextPkt += 1
 
     def start(self, key):
         with LOCK:
@@ -190,10 +202,16 @@ class Window(object):
             self.transmissionWindow[key][0] = time.time()
 
     def stop(self, key):
-        if key in self.transmissionWindow:
-            del self.transmissionWindow[key]
+        if self.exist(key):
+            self.transmissionWindow[key][0] = None
 
         if key == self.expectedAck:
+            for k, v in self.transmissionWindow.items():
+                if v[0] == None and v[1] == True:
+                    del self.transmissionWindow[k]
+                else:
+                    break
+
             if len(self.transmissionWindow) == 0:
                 self.expectedAck = self.nextSequenceNumber
             else:
@@ -203,8 +221,7 @@ class Window(object):
         return self.transmissionWindow[key][0]
 
     def unacked(self, key):
-        if (key in self.transmissionWindow and
-                self.transmissionWindow[key][1] == False):
+        if (self.exist(key) and self.transmissionWindow[key][1] == False):
             return True
         return False
 
@@ -270,17 +287,23 @@ class PacketHandler(Thread):
         # Monitor sender
         # untill all packets are successfully transmitted and acked
         log.info("[%s] Starting packet transmission", self.threadName)
-        while self.window.expectedACK() < self.totalPackets:
+        while (not self.window.empty() or
+                self.window.next() < self.totalPackets):
             # If window is full, then don't transmit a new packet
             if self.window.full():
                 pass
             # If window is not full, but all packets are already transmitted;
             # then stop packet transmission
-            elif self.window.next() >= self.totalPackets:
+            elif (not self.window.full() and
+                    self.window.next() >= self.totalPackets):
                 pass
             # Transmit a new packet using underlying UDP protocol
             else:
+                # Receive packet from Application Layer
                 packet = packets[self.window.next()]
+
+                # Slide transmission window by 1
+                self.window.consume(packet.SequenceNumber)
 
                 # Create a thread named 'SinglePacket'
                 # to monitor transmission of single packet
@@ -296,9 +319,6 @@ class PacketHandler(Thread):
 
                 # Start thread execution
                 singlePacket.start()
-
-                # Slide transmission window
-                self.window.consume(packet.SequenceNumber)
 
         # Stop packet transmission
         log.info("[%s] Stopping packet transmission", self.threadName)
@@ -322,8 +342,11 @@ class PacketHandler(Thread):
                 if not data:
                     break
 
+                # Set sequence number for a packet to be transmitted
+                sequenceNumber = i % self.window.maxSequenceNumber()
+
                 # Create a packet with required header fields and payload
-                pkt = PacketHandler.PACKET(SequenceNumber=self.window.next()+i,
+                pkt = PacketHandler.PACKET(SequenceNumber=sequenceNumber,
                                            Checksum=self.checksum(data),
                                            Data=data)
 
@@ -568,8 +591,7 @@ class ACKHandler(Thread):
 
             # If the received acknowledgement has acknowledgement number
             # beyond expected range, then discard the received acknowledgement
-            if (receivedAck.AckNumber < self.window.expectedACK() or
-                    receivedAck.AckNumber >= self.window.next()):
+            if not self.window.exist(receivedAck.AckNumber):
                 log.warning("[%s] Received acknowledgement outside transmission window!!",
                             self.threadName)
                 log.warning("[%s] Discarding acknowledgement with ack number: %d",

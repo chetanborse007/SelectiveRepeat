@@ -143,11 +143,12 @@ class Window(object):
     """
 
     def __init__(self, sequenceNumberBits):
-        self.previousPkt = -1
         self.expectedPkt = 0
-        self.maxSize = math.pow(2, sequenceNumberBits-1)
-        self.lastPkt = self.maxSize - 1
+        self.maxWindowSize = math.pow(2, sequenceNumberBits-1)
+        self.maxSequenceSpace = math.pow(2, sequenceNumberBits)
+        self.lastPkt = self.maxWindowSize - 1
         self.receiptWindow = OrderedDict()
+        self.isPacketReceipt = False
 
     def expectedPacket(self):
         return self.expectedPkt
@@ -155,16 +156,33 @@ class Window(object):
     def lastPacket(self):
         return self.lastPkt
 
+    def out_of_order(self, key):
+        if self.expectedPacket() > self.lastPacket():
+            if key < self.expectedPacket() and key > self.lastPacket():
+                return True
+        else:
+            if key < self.expectedPacket() or key > self.lastPacket():
+                return True
+        return False
+
     def exist(self, key):
-        if key in self.receiptWindow:
+        if key in self.receiptWindow and self.receiptWindow[key] != None:
             return True
         return False
 
     def store(self, receivedPacket):
-        self.receiptWindow[receivedPacket.SequenceNumber] = receivedPacket
+        if not self.expected(receivedPacket.SequenceNumber):
+            sequenceNumber = self.expectedPkt
 
-        if len(self.receiptWindow) > 1:
-            self.receiptWindow = OrderedDict(sorted(self.receiptWindow.items()))
+            while sequenceNumber != receivedPacket.SequenceNumber:
+                if sequenceNumber not in self.receiptWindow:
+                    self.receiptWindow[sequenceNumber] = None
+
+                sequenceNumber += 1
+                if sequenceNumber >= self.maxSequenceSpace:
+                    sequenceNumber %= self.maxSequenceSpace
+
+        self.receiptWindow[receivedPacket.SequenceNumber] = receivedPacket
 
     def expected(self, sequenceNumber):
         if sequenceNumber == self.expectedPkt:
@@ -175,18 +193,28 @@ class Window(object):
         packet = None
 
         if len(self.receiptWindow) > 0:
-            nextPkt = self.receiptWindow.items()[0][0]
+            nextPkt = self.receiptWindow.items()[0]
 
-            if (self.previousPkt+1) == nextPkt:
-                packet = self.receiptWindow[nextPkt]
-                del self.receiptWindow[nextPkt]
-                self.previousPkt = nextPkt
+            if nextPkt[1] != None:
+                packet = nextPkt[1]
+
+                del self.receiptWindow[nextPkt[0]]
+
+                self.expectedPkt = nextPkt[0] + 1
+                if self.expectedPkt >= self.maxSequenceSpace:
+                    self.expectedPkt %= self.maxSequenceSpace
+
+                self.lastPkt = self.expectedPkt + self.maxWindowSize - 1
+                if self.lastPkt >= self.maxSequenceSpace:
+                    self.lastPkt %= self.maxSequenceSpace
 
         return packet
 
-    def slide(self):
-        self.expectedPkt = self.previousPkt + 1
-        self.lastPkt = self.expectedPkt + self.maxSize - 1
+    def receipt(self):
+        return self.isPacketReceipt
+
+    def start_receipt(self):
+        self.isPacketReceipt = True
 
 
 class PacketHandler(Thread):
@@ -237,7 +265,7 @@ class PacketHandler(Thread):
             # If no packet is received within timeout;
             if not ready[0]:
                 # Wait, if no packets are yet transmitted by sender
-                if self.window.expectedPacket() == 0:
+                if not self.window.receipt():
                     continue
                 # Stop receiving packets from sender,
                 # if there are more than 5 consecutive timeouts
@@ -251,6 +279,8 @@ class PacketHandler(Thread):
                         continue
             else:
                 chance = 0
+                if not self.window.receipt():
+                    self.window.start_receipt()
 
             # Receive packet
             try:
@@ -270,9 +300,10 @@ class PacketHandler(Thread):
                             receivedPacket.SequenceNumber)
                 continue
 
-            # If the received packet is already delivered to Application Layer,
-            # then discard the received packet and send the corresponding acknowledgement
-            if receivedPacket.SequenceNumber < self.window.expectedPacket():
+            # If the received packet has out of order sequence number,
+            # then discard the received packet and
+            # send the corresponding acknowledgement
+            if self.window.out_of_order(receivedPacket.SequenceNumber):
                 log.warning("Received packet outside receipt window!!")
                 log.warning("Discarding packet with sequence number: %d",
                             receivedPacket.SequenceNumber)
@@ -281,20 +312,6 @@ class PacketHandler(Thread):
                 log.info("Transmitting an acknowledgement with ack number: %d",
                          receivedPacket.SequenceNumber)
                 self.rdt_send(receivedPacket.SequenceNumber)
-
-                continue
-
-            # If the received packet has sequence number
-            # beyond expected range, then discard the received packet
-            if receivedPacket.SequenceNumber > self.window.lastPacket():
-                log.warning("Received packet outside receipt window!!")
-                log.warning("Discarding packet with sequence number: %d",
-                            receivedPacket.SequenceNumber)
-
-                # Reliable acknowledgement transfer
-                log.info("Transmitting an acknowledgement with ack number: %d",
-                         self.window.expectedPacket())
-                self.rdt_send(self.window.expectedPacket())
 
                 continue
 
@@ -449,9 +466,6 @@ class PacketHandler(Thread):
                 self.deliver(packet.Data)
             else:
                 break
-
-        # Slide receipt window
-        self.window.slide()
 
     def deliver(self, data):
         """
