@@ -24,7 +24,6 @@ from collections import namedtuple
 from collections import OrderedDict
 from threading import Thread
 from threading import Lock
-from Carbon.Aliases import true
 
 
 # Set logging
