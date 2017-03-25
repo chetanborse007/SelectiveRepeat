@@ -38,6 +38,10 @@ class FileIOError(Exception):
     pass
 
 
+class WindowSizeError(Exception):
+    pass
+
+
 class Receiver(object):
     """
     Receiver running Selective Repeat protocol for reliable data transfer.
@@ -47,10 +51,12 @@ class Receiver(object):
                  receiverIP="127.0.0.1",
                  receiverPort=8080,
                  sequenceNumberBits=2,
+                 windowSize=None,
                  www=os.path.join(os.getcwd(), "data", "receiver")):
         self.receiverIP = receiverIP
         self.receiverPort = receiverPort
         self.sequenceNumberBits = sequenceNumberBits
+        self.windowSize = windowSize
         self.www = www
 
     def open(self):
@@ -93,7 +99,8 @@ class Receiver(object):
                               % filename)
 
         # Create an object of 'Window', which handles packet receipt
-        window = Window(self.sequenceNumberBits)
+        window = Window(self.sequenceNumberBits,
+                        self.windowSize)
 
         # Create a thread named 'PacketHandler' to monitor packet receipt
         log.info("Creating a thread to monitor packet receipt")
@@ -142,10 +149,16 @@ class Window(object):
     Class for assisting packet receipt.
     """
 
-    def __init__(self, sequenceNumberBits):
+    def __init__(self, sequenceNumberBits, windowSize=None):
         self.expectedPkt = 0
-        self.maxWindowSize = math.pow(2, sequenceNumberBits-1)
         self.maxSequenceSpace = math.pow(2, sequenceNumberBits)
+        if windowSize is None:
+            self.maxWindowSize = int(math.pow(2, sequenceNumberBits-1))
+        else:
+            if windowSize > int(math.pow(2, sequenceNumberBits-1)):
+                raise WindowSizeError("Invalid window size!!")
+            else:
+                self.maxWindowSize = windowSize
         self.lastPkt = self.maxWindowSize - 1
         self.receiptWindow = OrderedDict()
         self.isPacketReceipt = False

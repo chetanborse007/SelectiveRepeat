@@ -17,6 +17,7 @@ import argparse
 from SelectiveRepeat.client import Sender
 from SelectiveRepeat.client import SocketError
 from SelectiveRepeat.client import FileNotExistError
+from SelectiveRepeat.client import WindowSizeError
 
 
 def ClientApp(**args):
@@ -27,6 +28,7 @@ def ClientApp(**args):
     receiverIP = args["receiver_ip"]
     receiverPort = args["receiver_port"]
     sequenceNumberBits = args["sequence_number_bits"]
+    windowSize = args["window_size"]
     maxSegmentSize = args["max_segment_size"]
     totalPackets = args["total_packets"]
     timeout = args["timeout"]
@@ -36,6 +38,7 @@ def ClientApp(**args):
     sender = Sender(senderIP,
                     senderPort,
                     sequenceNumberBits,
+                    windowSize,
                     maxSegmentSize,
                     www)
 
@@ -58,6 +61,9 @@ def ClientApp(**args):
     except FileNotExistError as e:
         print("Unexpected exception in file to be sent!!")
         print(e)
+    except WindowSizeError as e:
+        print("Unexpected exception in window size!!")
+        print(e)
     except Exception as e:
         print("Unexpected exception!")
         print(e)
@@ -76,10 +82,11 @@ if __name__ == "__main__":
                                            -x <receiver_ip> \
                                            -y <receiver_port> \
                                            -m <sequence_number_bits> \
+                                           -w <window_size> \
                                            -s <max_segment_size> \
                                            -n <total_packets> \
                                            -t <timeout> \
-                                           -w <www>')
+                                           -d <www>')
 
     parser.add_argument("-f", "--filename", type=str, default="index.html",
                         help="File to be sent, default: index.html")
@@ -93,13 +100,15 @@ if __name__ == "__main__":
                         help="Receiver Port, default: 8080")
     parser.add_argument("-m", "--sequence_number_bits", type=int, default=2,
                         help="Total number of bits used in sequence numbers, default: 2")
+    parser.add_argument("-w", "--window_size", type=int, default=2,
+                        help="Window size, default: 2")
     parser.add_argument("-s", "--max_segment_size", type=int, default=1500,
                         help="Maximum segment size, default: 1500")
     parser.add_argument("-n", "--total_packets", type=str, default="ALL",
                         help="Total packets to be transmitted, default: ALL")
     parser.add_argument("-t", "--timeout", type=int, default=10,
                         help="Timeout, default: 10")
-    parser.add_argument("-w", "--www", type=str, default=os.path.join(os.getcwd(), "data", "sender"),
+    parser.add_argument("-d", "--www", type=str, default=os.path.join(os.getcwd(), "data", "sender"),
                         help="Source folder for transmission, default: /<Current Working Directory>/data/sender/")
 
     # Read user inputs

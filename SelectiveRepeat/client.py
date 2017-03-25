@@ -45,6 +45,10 @@ class FileNotExistError(Exception):
     pass
 
 
+class WindowSizeError(Exception):
+    pass
+
+
 class Sender(object):
     """
     Sender running Selective Repeat protocol for reliable data transfer.
@@ -54,11 +58,13 @@ class Sender(object):
                  senderIP="127.0.0.1",
                  senderPort=8081,
                  sequenceNumberBits=2,
+                 windowSize=None,
                  maxSegmentSize=1500,
                  www=os.path.join(os.getcwd(), "data", "sender")):
         self.senderIP = senderIP
         self.senderPort = senderPort
         self.sequenceNumberBits = sequenceNumberBits
+        self.windowSize = windowSize
         self.maxSegmentSize = maxSegmentSize
         self.www = www
 
@@ -98,7 +104,8 @@ class Sender(object):
                                     % filename)
 
         # Create an object of 'Window', which handles packet transmission
-        window = Window(self.sequenceNumberBits)
+        window = Window(self.sequenceNumberBits,
+                        self.windowSize)
 
         # Create a thread named 'PacketHandler' to monitor packet transmission
         log.info("Creating a thread to monitor packet transmission")
@@ -150,12 +157,18 @@ class Window(object):
     Class for assisting packet transmission.
     """
 
-    def __init__(self, sequenceNumberBits):
+    def __init__(self, sequenceNumberBits, windowSize=None):
         self.expectedAck = 0
         self.nextSequenceNumber = 0
         self.nextPkt = 0
-        self.maxWindowSize = int(math.pow(2, sequenceNumberBits-1))
         self.maxSequenceSpace = int(math.pow(2, sequenceNumberBits))
+        if windowSize is None:
+            self.maxWindowSize = int(math.pow(2, sequenceNumberBits-1))
+        else:
+            if windowSize > int(math.pow(2, sequenceNumberBits-1)):
+                raise WindowSizeError("Invalid window size!!")
+            else:
+                self.maxWindowSize = windowSize
         self.transmissionWindow = OrderedDict()
         self.isPacketTransmission = True
 

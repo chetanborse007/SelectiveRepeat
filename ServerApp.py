@@ -17,6 +17,7 @@ import argparse
 from SelectiveRepeat.server import Receiver
 from SelectiveRepeat.server import SocketError
 from SelectiveRepeat.server import FileIOError
+from SelectiveRepeat.server import WindowSizeError
 
 
 def ServerApp(**args):
@@ -27,6 +28,7 @@ def ServerApp(**args):
     receiverIP = args["receiver_ip"]
     receiverPort = args["receiver_port"]
     sequenceNumberBits = args["sequence_number_bits"]
+    windowSize = args["window_size"]
     timeout = args["timeout"]
     www = args["www"]
 
@@ -34,6 +36,7 @@ def ServerApp(**args):
     receiver = Receiver(receiverIP,
                         receiverPort,
                         sequenceNumberBits,
+                        windowSize,
                         www)
 
     try:
@@ -54,6 +57,9 @@ def ServerApp(**args):
     except FileIOError as e:
         print("Unexpected exception in file to be received!!")
         print(e)
+    except WindowSizeError as e:
+        print("Unexpected exception in window size!!")
+        print(e)
     except Exception as e:
         print("Unexpected exception!")
         print(e)
@@ -72,8 +78,9 @@ if __name__ == "__main__":
                                            -x <receiver_ip> \
                                            -y <receiver_port> \
                                            -m <sequence_number_bits> \
+                                           -w <window_size> \
                                            -t <timeout> \
-                                           -w <www>')
+                                           -d <www>')
 
     parser.add_argument("-f", "--filename", type=str, default="index.html",
                         help="File to be received, default: index.html")
@@ -87,9 +94,11 @@ if __name__ == "__main__":
                         help="Receiver Port, default: 8080")
     parser.add_argument("-m", "--sequence_number_bits", type=int, default=2,
                         help="Total number of bits used in sequence numbers, default: 2")
+    parser.add_argument("-w", "--window_size", type=int, default=2,
+                        help="Window size, default: 2")
     parser.add_argument("-t", "--timeout", type=int, default=10,
                         help="Timeout, default: 10")
-    parser.add_argument("-w", "--www", type=str, default=os.path.join(os.getcwd(), "data", "receiver"),
+    parser.add_argument("-d", "--www", type=str, default=os.path.join(os.getcwd(), "data", "receiver"),
                         help="Destination folder for receipt, default: /<Current Working Directory>/data/receiver/")
 
     # Read user inputs
