@@ -151,7 +151,7 @@ class Window(object):
 
     def __init__(self, sequenceNumberBits, windowSize=None):
         self.expectedPkt = 0
-        self.maxSequenceSpace = math.pow(2, sequenceNumberBits)
+        self.maxSequenceSpace = int(math.pow(2, sequenceNumberBits))
         if windowSize is None:
             self.maxWindowSize = int(math.pow(2, sequenceNumberBits-1))
         else:
